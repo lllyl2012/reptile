@@ -1,6 +1,7 @@
 import requests
 import re
 import json
+import time
 
 def parse_one_page(html):
 	pattern = re.compile(
@@ -18,9 +19,9 @@ def parse_one_page(html):
 		}
 
 def write_to_json(content):
-	with open('result.txt','a') as f:
+	with open('result.txt','a',encoding='utf-8') as f:
 		print(type(json.dumps(content)))
-		f.write(json.dumps(content,ensure_ascii=False,).encode('utf-8'))
+		f.write(json.dumps(content,ensure_ascii=False,))
 		
 def get_one_page(url):
 	headers = {
@@ -31,10 +32,13 @@ def get_one_page(url):
 		return response.text
 	return None
 
-def main():
-	url = 'http://maoyan.com/board/4'
+def main(offset):
+	url = 'http://maoyan.com/board/4?offset=' + str(offset)
 	html = get_one_page(url)
 	for item in parse_one_page(html):
-		print(item)
-	
-main()
+		write_to_json(item)
+
+if __name__ == '__main__':
+	for i in range(10):
+		main(offset=i * 10)
+		time.sleep(1)
